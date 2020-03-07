@@ -1,9 +1,9 @@
-<LinearLayout android:id="@+id/cell_container"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/cell_height"
-    android:background="@color/cell_background_color"
+    android:background="@color/table_view_default_text_color"
     android:gravity="center"
     android:orientation="vertical">
 
@@ -17,7 +17,7 @@
         android:layout_marginStart="10dp"
         android:gravity="center"
         android:maxLines="1"
-        android:textColor="@color/table_view_default_text_color"
+        android:textColor="@color/cell_background_color"
         android:textSize="@dimen/text_size"
         android:visibility="visible"
         tools:text="Cell Data"/>

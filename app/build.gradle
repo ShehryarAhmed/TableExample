@@ -49,9 +49,9 @@ dependencies {
 //    annotationProcessor "androidx.room:room-compiler:$room_version"
 
     // Retrofit2
-//    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-//    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-//    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
 
     // RxJava
 //    implementation "io.reactivex.rxjava3:rxandroid:$rxandroid_version"

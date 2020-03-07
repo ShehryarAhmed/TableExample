@@ -1,5 +1,7 @@
 package com.dotinfiny.tablesampleapp;
 
+import android.util.Log;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
@@ -24,8 +26,8 @@ public class TableViewModel {
     public static final int GIRL = 2;
 
     // Constant size for dummy data sets
-    private static final int COLUMN_SIZE = 50;
-    private static final int ROW_SIZE = 50;
+    private static final int COLUMN_SIZE = 10;
+    private static final int ROW_SIZE = 200;
 
     // Drawables
     @DrawableRes
@@ -61,7 +63,7 @@ public class TableViewModel {
      */
     @NonNull
     private List<ColumnHeader> getRandomColumnHeaderList() {
-        List<ColumnHeader> list = new ArrayList<>();
+            List<ColumnHeader> list = new ArrayList<>();
 
         for (int i = 0; i < COLUMN_SIZE; i++) {
             String title = "column " + i;
@@ -93,12 +95,7 @@ public class TableViewModel {
                     text = i;
                 } else if (j == 1) {
                     text = random;
-                } else if (j == MOOD_COLUMN_INDEX) {
-                    text = random % 2 == 0 ? HAPPY : SAD;
-                } else if (j == GENDER_COLUMN_INDEX) {
-                    text = random % 2 == 0 ? BOY : GIRL;
                 }
-
                 // Create dummy id.
                 String id = j + "-" + i;
 
@@ -112,6 +109,8 @@ public class TableViewModel {
                 } else {
                     cell = new Cell(id, text);
                 }
+
+                Log.d("value",""+text);
                 cellList.add(cell);
             }
             list.add(cellList);
@@ -143,4 +142,6 @@ public class TableViewModel {
     public List<ColumnHeader> getColumnHeaderList() {
         return getRandomColumnHeaderList();
     }
+
+
 }

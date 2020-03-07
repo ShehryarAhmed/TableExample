@@ -14,6 +14,8 @@ public class Cell implements ISortableModel, IFilterableModel {
     @NonNull
     private String mFilterKeyword;
 
+    private String mAlignProperty = "Right";
+
     public Cell(@NonNull String id, @Nullable Object data) {
         this.mId = id;
         this.mData = data;
@@ -53,5 +55,9 @@ public class Cell implements ISortableModel, IFilterableModel {
     @Override
     public String getFilterableKeyword() {
         return mFilterKeyword;
+    }
+
+    public String getmAlignProperty() {
+        return mAlignProperty;
     }
 }

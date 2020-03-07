@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.dotinfiny.tablesampleapp.model.Cell;
+import com.dotinfiny.tablesampleapp.model.ColumnHeader;
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.filter.Filter;
 import com.evrencoskun.tableview.pagination.Pagination;
+import com.google.gson.JsonElement;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainFragment extends Fragment {
     private Spinner moodFilter, genderFilter;
@@ -32,6 +43,8 @@ public class MainFragment extends Fragment {
     private Pagination mPagination; // This is used for paginating the table.
 
     private boolean mPaginationEnabled = false;
+
+    List<ColumnHeader> columnHeader = new ArrayList<>();
 
     public MainFragment() {
         // Required empty public constructor
@@ -44,254 +57,66 @@ public class MainFragment extends Fragment {
 
         View layout = inflater.inflate(R.layout.fragment_main, container, false);
 
-        EditText searchField = layout.findViewById(R.id.query_string);
-        searchField.addTextChangedListener(mSearchTextWatcher);
-
-        moodFilter = layout.findViewById(R.id.mood_spinner);
-        moodFilter.setOnItemSelectedListener(mItemSelectionListener);
-
-        genderFilter = layout.findViewById(R.id.gender_spinner);
-        genderFilter.setOnItemSelectedListener(mItemSelectionListener);
-
-        Spinner itemsPerPage = layout.findViewById(R.id.items_per_page_spinner);
-
-        View tableTestContainer = layout.findViewById(R.id.table_test_container);
-
-        previousButton = layout.findViewById(R.id.previous_button);
-        nextButton = layout.findViewById(R.id.next_button);
-        EditText pageNumberField = layout.findViewById(R.id.page_number_text);
-        tablePaginationDetails = layout.findViewById(R.id.table_details);
-
-        if (mPaginationEnabled) {
-            tableTestContainer.setVisibility(View.VISIBLE);
-            itemsPerPage.setOnItemSelectedListener(onItemsPerPageSelectedListener);
-
-            previousButton.setOnClickListener(mClickListener);
-            nextButton.setOnClickListener(mClickListener);
-            pageNumberField.addTextChangedListener(onPageTextChanged);
-        } else {
-            tableTestContainer.setVisibility(View.GONE);
-        }
         // Let's get TableView
         mTableView = layout.findViewById(R.id.tableview);
 
-        initializeTableView();
-
-        if (mPaginationEnabled) {
-            mTableFilter = new Filter(mTableView); // Create an instance of a Filter and pass the
-            // created TableView.
-
-            // Create an instance for the TableView pagination and pass the created TableView.
-            mPagination = new Pagination(mTableView);
-
-            // Sets the pagination listener of the TableView pagination to handle
-            // pagination actions. See onTableViewPageTurnedListener variable declaration below.
-            mPagination.setOnTableViewPageTurnedListener(onTableViewPageTurnedListener);
+        for(String str : "Machine,Batcher,Length,Grading,Notification Time".split(",")){
+            columnHeader.add(new ColumnHeader("1",str));
         }
 
+        initializeTableView();
 
         return layout;
+
     }
 
     private void initializeTableView() {
         // Create TableView View model class  to group view models of TableView
         TableViewModel tableViewModel = new TableViewModel();
-
         // Create TableView Adapter
-        TableViewAdapter tableViewAdapter = new TableViewAdapter(tableViewModel);
+        TableViewAdapter tableViewAdapter = new TableViewAdapter(tableViewModel, getContext());
 
         mTableView.setAdapter(tableViewAdapter);
         mTableView.setTableViewListener(new TableViewListener(mTableView));
 
-        // Create an instance of a Filter and pass the TableView.
-        //mTableFilter = new Filter(mTableView);
+        //        tableViewAdapter.setAllItems(tableViewModel.getColumnHeaderList(), new ArrayList<>(), tableViewModel.getCellList());
+        tableViewAdapter.setColumnHeaderItems(columnHeader);
+//        tableViewAdapter.setCellItems(tableViewModel.getCellList());
 
-        // Load the dummy data to the TableView
+//        mTableView.setColumnWidth(0, 90);
+//        mTableView.setColumnWidth(3, 100);
+//        mTableView.setColumnWidth(4, 100);
+//        mTableView.setColumnWidth(5, 500);
 
-//        tableViewAdapter.setAllItems(tableViewModel.getColumnHeaderList(), tableViewModel
-//                .getRowHeaderList(), tableViewModel.getCellList());
+        initApi(tableViewAdapter);
 
-        tableViewAdapter.setAllItems(tableViewModel.getColumnHeaderList(), new ArrayList<>(), tableViewModel.getCellList());
-
-        //mTableView.setHasFixedWidth(true);
-
-        /*for (int i = 0; i < mTableViewModel.getCellList().size(); i++) {
-            mTableView.setColumnWidth(i, 200);
-        }*)
-        //mTableView.setColumnWidth(0, -2);
-        //mTableView.setColumnWidth(1, -2);
-        mTableView.setColumnWidth(2, 200);*/
-        mTableView.setShowVerticalSeparators(false);
-        mTableView.setColumnWidth(0, 50);
-        mTableView.setColumnWidth(3, 100);
-        mTableView.setColumnWidth(4, 100);
-        mTableView.setColumnWidth(5, 500);
 
     }
 
-    public void filterTable(@NonNull String filter) {
-        // Sets a filter to the table, this will filter ALL the columns.
-        mTableFilter.set(filter);
-    }
 
-    public void filterTableForMood(@NonNull String filter) {
-        // Sets a filter to the table, this will only filter a specific column.
-        // In the example data, this will filter the mood column.
-        mTableFilter.set(TableViewModel.MOOD_COLUMN_INDEX, filter);
-    }
-
-    public void filterTableForGender(@NonNull String filter) {
-        // Sets a filter to the table, this will only filter a specific column.
-        // In the example data, this will filter the gender column.
-        mTableFilter.set(TableViewModel.GENDER_COLUMN_INDEX, filter);
-    }
-
-    // The following four methods below: nextTablePage(), previousTablePage(),
-    // goToTablePage(int page) and setTableItemsPerPage(int itemsPerPage)
-    // are for controlling the TableView pagination.
-    public void nextTablePage() {
-        mPagination.nextPage();
-    }
-
-    public void previousTablePage() {
-        mPagination.previousPage();
-    }
-
-    public void goToTablePage(int page) {
-        mPagination.goToPage(page);
-    }
-
-    public void setTableItemsPerPage(int itemsPerPage) {
-        mPagination.setItemsPerPage(itemsPerPage);
-    }
-
-    // Handler for the changing of pages in the paginated TableView.
-    @NonNull
-    private Pagination.OnTableViewPageTurnedListener onTableViewPageTurnedListener = new
-            Pagination.OnTableViewPageTurnedListener() {
-                @Override
-                public void onPageTurned(int numItems, int itemsStart, int itemsEnd) {
-                    int currentPage = mPagination.getCurrentPage();
-                    int pageCount = mPagination.getPageCount();
-                    previousButton.setVisibility(View.VISIBLE);
-                    nextButton.setVisibility(View.VISIBLE);
-
-                    if (currentPage == 1 && pageCount == 1) {
-                        previousButton.setVisibility(View.INVISIBLE);
-                        nextButton.setVisibility(View.INVISIBLE);
+    private void initApi(TableViewAdapter tableViewAdapter){
+        List<List<Cell>> cell = new ArrayList<>();
+        ApiCalls api = Clinet.getClient(getContext()).create(ApiCalls.class);
+        Call<List<JsonElement>> call = api.getData("EXEC EERP_Notification  '07 Mar 20 10:29 AM','07 Mar 20 11:29 PM','1'","Machine,Batcher,Length,Grading,Notification Time","Table");
+        call.enqueue(new Callback<List<JsonElement>>() {
+            @Override
+            public void onResponse(Call<List<JsonElement>> call, Response<List<JsonElement>> response) {
+                Log.d("onResponse","da");
+                for(JsonElement element : response.body()){
+                    List<Cell> eachRow = new ArrayList<>();
+                    for(JsonElement element1 : element.getAsJsonObject().get("Data").getAsJsonArray()){
+                        Log.d("value",""+element1.getAsJsonObject().get("Values").getAsString());
+                        eachRow.add(new Cell("id",""+element1.getAsJsonObject().get("Values").getAsString()));
                     }
-
-                    if (currentPage == 1) {
-                        previousButton.setVisibility(View.INVISIBLE);
-                    }
-
-                    if (currentPage == pageCount) {
-                        nextButton.setVisibility(View.INVISIBLE);
-                    }
-
-                    tablePaginationDetails.setText(getString(R.string.table_pagination_details, String
-                            .valueOf(currentPage), String.valueOf(itemsStart), String.valueOf(itemsEnd)));
-
+                    cell.add(eachRow);
                 }
-            };
-
-    @NonNull
-    private AdapterView.OnItemSelectedListener mItemSelectionListener = new AdapterView
-            .OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            // 0. index is for empty item of spinner.
-            if (position > 0) {
-
-                String filter = Integer.toString(position);
-
-                if (parent == moodFilter) {
-                    filterTableForMood(filter);
-                } else if (parent == genderFilter) {
-                    filterTableForGender(filter);
-                }
-            }
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-            // Left empty intentionally.
-        }
-    };
-
-    @NonNull
-    private TextWatcher mSearchTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            filterTable(String.valueOf(s));
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
-
-    @NonNull
-    private AdapterView.OnItemSelectedListener onItemsPerPageSelectedListener = new AdapterView
-            .OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            int itemsPerPage;
-            if ("All".equals(parent.getItemAtPosition(position).toString())) {
-                itemsPerPage = 0;
-            } else {
-                itemsPerPage = Integer.parseInt(parent.getItemAtPosition(position).toString());
+                tableViewAdapter.setCellItems(cell);
             }
 
-            setTableItemsPerPage(itemsPerPage);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
-
-    @NonNull
-    private View.OnClickListener mClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (v == previousButton) {
-                previousTablePage();
-            } else if (v == nextButton) {
-                nextTablePage();
+            @Override
+            public void onFailure(Call<List<JsonElement>> call, Throwable t) {
+                Log.d("onFailure","da");
             }
-        }
-    };
-
-    @NonNull
-    private TextWatcher onPageTextChanged = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            int page;
-            if (TextUtils.isEmpty(s)) {
-                page = 1;
-            } else {
-                page = Integer.parseInt(String.valueOf(s));
-            }
-
-            goToTablePage(page);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
+        });
+    }
 }

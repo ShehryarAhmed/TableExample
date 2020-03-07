@@ -1,5 +1,4 @@
 <LinearLayout
-    android:id="@+id/column_header_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -28,7 +27,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="4"
                 android:gravity="center"
-                android:textColor="@color/table_view_default_text_color"
+                android:clickable="false"
+                android:textColor="@color/cell_background_color"
                 android:textSize="@dimen/text_size"
                 tools:text="Header Data"/>
 
@@ -49,6 +49,6 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_gravity="bottom"
-            android:background="@color/header_line_color"/>
+            android:background="@color/cell_background_color"/>
     </FrameLayout>
 </LinearLayout>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@+id/root"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/cell_background_color"
     android:layout_width="@dimen/row_header_width"
     android:layout_height="@dimen/cell_height">
 
@@ -20,7 +19,8 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:textColor="@color/table_view_default_text_color"
+            android:clickable="false"
+            android:textColor="@color/cell_background_color"
             android:textSize="@dimen/text_size"
             tools:text="Row Data"/>
 
