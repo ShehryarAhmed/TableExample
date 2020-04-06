@@ -10,7 +10,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Clinet {
 
-    public static String BASE_URL = "http://128.0.0.19/kt_api/";//
+//    public static String BASE_URL = "http://128.0.0.19/kt_api/";//
+    public static String BASE_URL = "http://www.blackvogue.com/kt_api/";//
 
     public static Retrofit getClient(Context context) {
         OkHttpClient client = new OkHttpClient.Builder()/*.addInterceptor(interceptor)*/

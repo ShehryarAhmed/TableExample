@@ -25,7 +25,6 @@ public class TableViewListener implements ITableViewListener {
 
     @Override
     public void onCellClicked(@NonNull RecyclerView.ViewHolder cellView, int column, int row) {
-
     }
 
     @Override

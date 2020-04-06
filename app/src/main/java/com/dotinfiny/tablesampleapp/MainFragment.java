@@ -60,14 +60,13 @@ public class MainFragment extends Fragment {
         // Let's get TableView
         mTableView = layout.findViewById(R.id.tableview);
 
-        for(String str : "Machine,Batcher,Length,Grading,Notification Time".split(",")){
-            columnHeader.add(new ColumnHeader("1",str));
+        for (String str : "Date,Meters,SPN%,DYG%,SIZ%,PRD%,WEV%,FIN%,TTL%".split(",")) {
+            columnHeader.add(new ColumnHeader("1", str));
         }
 
         initializeTableView();
 
         return layout;
-
     }
 
     private void initializeTableView() {
@@ -78,6 +77,7 @@ public class MainFragment extends Fragment {
 
         mTableView.setAdapter(tableViewAdapter);
         mTableView.setTableViewListener(new TableViewListener(mTableView));
+        mTableView.setHasFixedWidth(false);
 
         //        tableViewAdapter.setAllItems(tableViewModel.getColumnHeaderList(), new ArrayList<>(), tableViewModel.getCellList());
         tableViewAdapter.setColumnHeaderItems(columnHeader);
@@ -90,23 +90,26 @@ public class MainFragment extends Fragment {
 
         initApi(tableViewAdapter);
 
-
     }
 
 
-    private void initApi(TableViewAdapter tableViewAdapter){
+    private void initApi(TableViewAdapter tableViewAdapter) {
         List<List<Cell>> cell = new ArrayList<>();
         ApiCalls api = Clinet.getClient(getContext()).create(ApiCalls.class);
-        Call<List<JsonElement>> call = api.getData("EXEC EERP_Notification  '07 Mar 20 10:29 AM','07 Mar 20 11:29 PM','1'","Machine,Batcher,Length,Grading,Notification Time","Table");
+//        Call<List<JsonElement>> call = api.getData("EXEC EERP_Notification  '07 Mar 20 10:29 AM','07 Mar 20 11:29 PM','1'", "Machine,Batcher,Length,Grading,Notification Time", "Table");
+        Call<List<JsonElement>> call = api.getData("Exec APPS_FabricProduction '01 Mar 20','18 Mar 20','1','1'", "Date,Meters,SPN%,DYG%,SIZ%,PRD%,WEV%,FIN%,TTL%", "TableFormatted");
+
+        Log.d("Url",call.request().url().toString());
+
         call.enqueue(new Callback<List<JsonElement>>() {
             @Override
             public void onResponse(Call<List<JsonElement>> call, Response<List<JsonElement>> response) {
-                Log.d("onResponse","da");
-                for(JsonElement element : response.body()){
+                Log.d("onResponse", "da");
+                for (JsonElement element : response.body()) {
                     List<Cell> eachRow = new ArrayList<>();
-                    for(JsonElement element1 : element.getAsJsonObject().get("Data").getAsJsonArray()){
-                        Log.d("value",""+element1.getAsJsonObject().get("Values").getAsString());
-                        eachRow.add(new Cell("id",""+element1.getAsJsonObject().get("Values").getAsString()));
+                    for (JsonElement element1 : element.getAsJsonObject().get("Data").getAsJsonArray()) {
+                        Log.d("value", "" + element1.getAsJsonObject().get("Values").getAsString());
+                        eachRow.add(new Cell("id", "" + element1.getAsJsonObject().get("Values").getAsString().split("\\|")[0].toString()));
                     }
                     cell.add(eachRow);
                 }
@@ -115,7 +118,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<JsonElement>> call, Throwable t) {
-                Log.d("onFailure","da");
+                Log.d("onFailure", "da");
             }
         });
     }

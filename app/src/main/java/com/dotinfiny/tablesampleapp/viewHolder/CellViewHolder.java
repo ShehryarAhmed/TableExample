@@ -1,5 +1,6 @@
 package com.dotinfiny.tablesampleapp.viewHolder;
 
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -26,18 +27,21 @@ public class CellViewHolder extends AbstractViewHolder {
 
     public void setCell(@Nullable Cell cell) {
         cell_textview.setText(String.valueOf(cell.getData()));
-//        if(isNumeric(String.valueOf(cell.getData()))){
-//            cell_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-//        }else{
-//            cell_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-//        }
-        // If your TableView should have auto resize for cells & columns.
-        // Then you should consider the below lines. Otherwise, you can ignore them.
+        cell_textview.setTextColor(Color.parseColor("#FF0000"));
+        cell_textview.setTextSize(12);
 
-        // It is necessary to remeasure itself.
+        if(isNumeric(String.valueOf(cell.getData()))){
+            cell_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+        }else{
+            cell_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+        }
+//         If your TableView should have auto resize for cells & columns.
+//         Then you should consider the below lines. Otherwise, you can ignore them.
+
+//         It is necessary to remeasure itself.
 //        cell_container.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
-//
-//        cell_textview.requestLayout();
+
+        cell_textview.requestLayout();
     }
 
     public boolean isNumeric(String str) {

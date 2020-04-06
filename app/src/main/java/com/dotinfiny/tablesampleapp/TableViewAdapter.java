@@ -1,6 +1,7 @@
 package com.dotinfiny.tablesampleapp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -122,6 +123,7 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
         // Get the holder to update row header item text
         RowHeaderViewHolder rowHeaderViewHolder = (RowHeaderViewHolder) holder;
         rowHeaderViewHolder.row_header_textview.setText(String.valueOf(rowHeaderItemModel.getData()));
+        rowHeaderViewHolder.row_header_textview.setTextColor(Color.parseColor("#FF0000"));
         Log.d("row", "" + rowHeaderItemModel.getData());
 
     }
